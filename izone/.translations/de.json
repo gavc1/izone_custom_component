@@ -1,0 +1,15 @@
+{
+    "config": {
+        "abort": {
+            "no_devices_found": "Keine iZone Ger\u00e4te im Netzwerk gefunden.",
+            "single_instance_allowed": "Nur eine einzige Konfiguration von iZone ist notwendig."
+        },
+        "step": {
+            "confirm": {
+                "description": "M\u00f6chten Sie iZone einrichten?",
+                "title": "iZone"
+            }
+        },
+        "title": "iZone"
+    }
+}

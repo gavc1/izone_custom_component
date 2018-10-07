@@ -1,0 +1,15 @@
+{
+  "config": {
+    "title": "iZone Aircon",
+    "step": {
+      "confirm": {
+        "title": "iZone Aircon",
+        "description": "Do you want to set up iZone Aircon?"
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Only a single configuration of iZone is necessary.",
+      "no_devices_found": "No iZone devices found on the network."
+    }
+  }
+}
