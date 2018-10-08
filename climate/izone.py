@@ -20,7 +20,7 @@ from homeassistant.const import (
 from homeassistant.helpers.typing import HomeAssistantType, ConfigType
 from homeassistant.helpers.temperature import display_temp as show_temp
 
-REQUIREMENTS = ['pizone==1.3.0']
+REQUIREMENTS = ['python-izone==1.0.0']
 
 DEPENENCIES = ['izone']
 
