@@ -8,3 +8,12 @@ I have noted some issues with connecting to the system if you hammer it with lot
 # Installation
 
 Checkout the subdirectories into the custom_components subdir of the config directory of home assistant.
+
+# Configuration
+
+Just put 
+```
+izone:
+```
+
+in the HA config file and it should run. It will find the iZone system on the local network.
