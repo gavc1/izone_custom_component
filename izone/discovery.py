@@ -13,7 +13,7 @@ from custom_components.climate.izone import ControllerDevice
 from .constants import (
     DATA_CONFIG, DATA_DISCOVERY_SERVICE, DATA_ADD_ENTRIES)
 
-REQUIREMENTS = ['python-izone==1.0.0']
+REQUIREMENTS = ['python-izone==1.0.1']
 
 _LOGGER = logging.getLogger(__name__)
 

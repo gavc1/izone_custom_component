@@ -20,7 +20,7 @@ from .constants import DOMAIN, DATA_CONFIG
 from .discovery import (
     async_start_discovery_service, async_stop_discovery_service)
 
-REQUIREMENTS = ['python-izone==1.0.0']
+REQUIREMENTS = ['python-izone==1.0.1']
 
 _LOGGER = logging.getLogger(__name__)
 
