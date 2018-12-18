@@ -1,8 +1,8 @@
 """
-Support for the Daikin HVAC.
+Support for the iZone.
 
 For more details about this platform, please refer to the documentation at
-https://home-assistant.io/components/climate.daikin/
+https://home-assistant.io/components/
 """
 import logging
 
@@ -289,40 +289,40 @@ class ZoneDevice(ClimateDevice):
     def __init__(self, controller: ControllerDevice, zone) -> None:
         """Initialise ZoneDevice."""
         from pizone import Zone
-
-        self._controller = controller
+        """The HA representation of the controller"""
+        self._controller_device = controller
         self._zone = cast(Zone, zone)
 
-        self._state_to_pizone = {
+        self._on_state_to_pizone = {
             STATE_CLOSED.title(): Zone.Mode.CLOSE,
             STATE_OPEN.title(): Zone.Mode.OPEN,
         }
         self._supported_features = 0
         if zone.type != Zone.Type.CONST:
-            self._supported_features = SUPPORT_OPERATION_MODE
+            self._supported_features = (SUPPORT_OPERATION_MODE | SUPPORT_ON_OFF)
         if zone.type == Zone.Type.AUTO:
             self._supported_features |= SUPPORT_TARGET_TEMPERATURE
-            self._state_to_pizone[STATE_AUTO.title()] = Zone.Mode.AUTO
+            #self._state_to_pizone[STATE_AUTO.title()] = Zone.Mode.AUTO
 
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        return self._controller.available
+        return self._controller_device.available
 
     @property
     def assumed_state(self) -> bool:
         """Return True if unable to access real state of the entity."""
-        return self._controller.assumed_state
+        return self._controller_device.assumed_state
 
     @property
     def device_info(self):
         """Return the device info for the iZone system."""
-        return self._controller.device_info
+        return self._controller_device.device_info
 
     @property
     def unique_id(self):
         """Return the ID of the controller device."""
-        return (self._controller.unique_id + '_z' +
+        return (self._controller_device.unique_id + '_z' +
                 str(self._zone.index+1))
 
     @property
@@ -356,8 +356,8 @@ class ZoneDevice(ClimateDevice):
     @property
     def current_operation(self):
         """Return current operation ie. heat, cool, idle."""
-        mode = self._zone.mode
-        for (key, value) in self._state_to_pizone.items():
+        mode = self._controller_device._controller.mode
+        for (key, value) in self._controller_device._state_to_pizone.items():
             if value == mode:
                 return key
         return ''
@@ -365,7 +365,7 @@ class ZoneDevice(ClimateDevice):
     @property
     def operation_list(self):
         """Return the list of available operation modes."""
-        return list(self._state_to_pizone.keys())
+        return list(self._controller_device._state_to_pizone.keys())
 
     @property
     def current_temperature(self):
@@ -376,6 +376,15 @@ class ZoneDevice(ClimateDevice):
     def target_temperature(self):
         """Return the temperature we try to reach."""
         return self._zone.temp_setpoint
+        
+    @property
+    def is_on(self):
+        """Return true if controller is on and zone is OPEN
+        if controller is off, return off for zone too"""
+        if self._controller_device.is_on and self._zone.mode != self._zone.Mode.CLOSE:
+            return True
+        else:
+            return False
 
     @property
     def target_temperature_step(self):
@@ -385,12 +394,12 @@ class ZoneDevice(ClimateDevice):
     @property
     def min_temp(self):
         """Return the minimum temperature."""
-        return self._controller.min_temp
+        return self._controller_device.min_temp
 
     @property
     def max_temp(self):
         """Return the maximum temperature."""
-        return self._controller.max_temp
+        return self._controller_device.max_temp
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature.
@@ -399,7 +408,7 @@ class ZoneDevice(ClimateDevice):
         """
         temp = kwargs.get(ATTR_TEMPERATURE)
         if temp:
-            await self._controller._wrap_and_catch(  # pylint: disable=W0212
+            await self._controller_device._wrap_and_catch(  # pylint: disable=W0212
                 self._zone.set_temp_setpoint(temp))
 
     async def async_set_operation_mode(self, operation_mode):
@@ -407,6 +416,30 @@ class ZoneDevice(ClimateDevice):
 
         This method must be run in the event loop and returns a coroutine.
         """
-        mode = self._state_to_pizone[operation_mode]
-        await self._controller._wrap_and_catch(  # pylint: disable=W0212
-            self._zone.set_mode(mode))
+        mode = self._controller_device._state_to_pizone[operation_mode]
+        await self._controller_device._wrap_and_catch(  # pylint: disable=W0212
+            self._controller_device._controller.set_mode(mode))
+
+    async def async_turn_on(self):
+        """Turn device on (open zone).
+
+        This method must be run in the event loop and returns a coroutine.
+        """
+        if self._zone.type == self._zone.Type.CONST:
+            await self._controller_device._wrap_and_catch(  # pylint: disable=W0212
+            self._zone.set_mode(self._zone.Mode.OPEN))
+        else:
+            await self._controller_device._wrap_and_catch(  # pylint: disable=W0212
+            self._zone.set_mode(self._zone.Mode.AUTO))    
+        if not self._controller_device.is_on:
+            await self._controller_device._wrap_and_catch(self._controller_device._controller.set_on(True))
+
+    async def async_turn_off(self):
+        """Turn device off (close zone).
+
+        This method must be run in the event loop and returns a coroutine.
+        """
+        await self._controller_device._wrap_and_catch(  # pylint: disable=W0212
+            self._zone.set_mode(self._zone.Mode.CLOSE))
+
+            
