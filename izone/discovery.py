@@ -4,14 +4,13 @@ from asyncio import Event
 import logging
 from typing import Dict
 
-from homeassistant.const import (
-    CONF_EXCLUDE, EVENT_HOMEASSISTANT_STOP)
-from homeassistant.helpers import aiohttp_client
-from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 from custom_components.climate.izone import ControllerDevice
 
-from .constants import (
-    DATA_CONFIG, DATA_DISCOVERY_SERVICE, DATA_ADD_ENTRIES)
+from homeassistant.const import CONF_EXCLUDE, EVENT_HOMEASSISTANT_STOP
+from homeassistant.helpers import aiohttp_client
+from homeassistant.helpers.typing import ConfigType, HomeAssistantType
+
+from .constants import DATA_ADD_ENTRIES, DATA_CONFIG, DATA_DISCOVERY_SERVICE
 
 REQUIREMENTS = ['python-izone==1.0.1']
 
