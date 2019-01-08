@@ -1,8 +1,8 @@
 """
-Support for the Daikin HVAC.
+Support for the iZone HVAC.
 
 For more details about this platform, please refer to the documentation at
-https://home-assistant.io/components/climate.daikin/
+https://github.com/Swamp-Ig/izone_custom_component
 """
 import logging
 
