@@ -294,15 +294,15 @@ class ZoneDevice(ClimateDevice):
         self._zone = cast(Zone, zone)
 
         self._state_to_pizone = {
-            STATE_CLOSED.title(): Zone.Mode.CLOSE,
-            STATE_OPEN.title(): Zone.Mode.OPEN,
+            STATE_CLOSED: Zone.Mode.CLOSE,
+            STATE_OPEN: Zone.Mode.OPEN,
         }
         self._supported_features = 0
         if zone.type != Zone.Type.CONST:
             self._supported_features = SUPPORT_OPERATION_MODE
         if zone.type == Zone.Type.AUTO:
             self._supported_features |= SUPPORT_TARGET_TEMPERATURE
-            self._state_to_pizone[STATE_AUTO.title()] = Zone.Mode.AUTO
+            self._state_to_pizone[STATE_AUTO] = Zone.Mode.AUTO
 
     @property
     def available(self) -> bool:
