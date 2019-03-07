@@ -1,18 +1,15 @@
 """Internal discovery service for  iZone AC."""
 
-from asyncio import Event
 import logging
+from asyncio import Event
 from typing import Dict
-
-from custom_components.climate.izone import ControllerDevice
 
 from homeassistant.const import CONF_EXCLUDE, EVENT_HOMEASSISTANT_STOP
 from homeassistant.helpers import aiohttp_client
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
+from .climate import ControllerDevice
 from .constants import DATA_ADD_ENTRIES, DATA_CONFIG, DATA_DISCOVERY_SERVICE
-
-REQUIREMENTS = ['python-izone==1.0.1']
 
 _LOGGER = logging.getLogger(__name__)
 

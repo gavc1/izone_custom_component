@@ -7,21 +7,18 @@ https://github.com/Swamp-Ig/izone_custom_component
 import logging
 from typing import cast
 
-from custom_components.izone.constants import (DATA_ADD_ENTRIES,
-                                               DATA_DISCOVERY_SERVICE, DOMAIN)
-from homeassistant.components.climate import (STATE_AUTO, STATE_COOL,
-                                              STATE_DRY, STATE_FAN_ONLY,
-                                              STATE_HEAT, SUPPORT_FAN_MODE,
-                                              SUPPORT_ON_OFF,
-                                              SUPPORT_OPERATION_MODE,
-                                              SUPPORT_TARGET_TEMPERATURE,
-                                              ClimateDevice)
-from homeassistant.const import (ATTR_TEMPERATURE, PRECISION_HALVES,
-                                 STATE_OPEN, STATE_CLOSED, TEMP_CELSIUS)
+from homeassistant.components.climate import (
+    ClimateDevice,
+    STATE_AUTO, STATE_COOL, STATE_DRY, STATE_FAN_ONLY, STATE_HEAT,
+    SUPPORT_FAN_MODE, SUPPORT_ON_OFF, SUPPORT_OPERATION_MODE,
+    SUPPORT_TARGET_TEMPERATURE
+    )
+from homeassistant.const import (
+    ATTR_TEMPERATURE, PRECISION_HALVES, STATE_CLOSED, STATE_OPEN, TEMP_CELSIUS)
 from homeassistant.helpers.temperature import display_temp as show_temp
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
-DEPENENCIES = ['izone']
+from .constants import DATA_ADD_ENTRIES, DATA_DISCOVERY_SERVICE, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
