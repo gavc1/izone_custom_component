@@ -7,12 +7,11 @@ https://github.com/Swamp-Ig/izone_custom_component
 import logging
 from typing import cast
 
-from homeassistant.components.climate import (
-    ClimateDevice,
+from homeassistant.components.climate import ClimateDevice
+from homeassistant.components.climate.const import (
     STATE_AUTO, STATE_COOL, STATE_DRY, STATE_FAN_ONLY, STATE_HEAT,
     SUPPORT_FAN_MODE, SUPPORT_ON_OFF, SUPPORT_OPERATION_MODE,
-    SUPPORT_TARGET_TEMPERATURE
-    )
+    SUPPORT_TARGET_TEMPERATURE)
 from homeassistant.const import (
     ATTR_TEMPERATURE, PRECISION_HALVES, STATE_CLOSED, STATE_OPEN, TEMP_CELSIUS)
 from homeassistant.helpers.temperature import display_temp as show_temp
