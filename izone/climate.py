@@ -10,8 +10,8 @@ from typing import cast
 from homeassistant.components.climate import ClimateDevice
 from homeassistant.components.climate.const import (
     STATE_AUTO, STATE_COOL, STATE_DRY, STATE_FAN_ONLY, STATE_HEAT,
-    SUPPORT_FAN_MODE, SUPPORT_ON_OFF, SUPPORT_OPERATION_MODE,
-    SUPPORT_TARGET_TEMPERATURE)
+    STATE_ECO, SUPPORT_FAN_MODE, SUPPORT_ON_OFF,
+    SUPPORT_OPERATION_MODE, SUPPORT_TARGET_TEMPERATURE)
 from homeassistant.const import (
     ATTR_TEMPERATURE, PRECISION_HALVES, STATE_CLOSED, STATE_OPEN, TEMP_CELSIUS)
 from homeassistant.helpers.temperature import display_temp as show_temp
@@ -20,10 +20,6 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 from .constants import DATA_ADD_ENTRIES, DATA_DISCOVERY_SERVICE, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-
-# TODO: add this state to the component states list.
-# will need adding to the front-end strings as well.
-STATE_OUTSIDE_AIR = 'outside_air'
 
 
 async def async_setup_entry(hass: HomeAssistantType, config: ConfigType,
@@ -65,9 +61,7 @@ class ControllerDevice(ClimateDevice):
             STATE_DRY: Controller.Mode.DRY,
         }
         if controller.free_air_enabled:
-            # TODO: when added to the climate states, remove this
-            label = STATE_OUTSIDE_AIR.title().replace('_', ' ')
-            self._state_to_pizone[label] = Controller.Mode.FREE_AIR
+            self._state_to_pizone[STATE_ECO] = Controller.Mode.FREE_AIR
 
         self._fan_to_pizone = {}
         for fan in controller.fan_modes:
