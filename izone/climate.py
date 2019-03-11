@@ -184,6 +184,9 @@ class ControllerDevice(ClimateDevice):
     @property
     def current_temperature(self):
         """Return the current temperature."""
+        from pizone import Controller
+        if self._controller.mode == Controller.Mode.FREE_AIR:
+            return self._controller.temp_supply
         return self._controller.temp_return
 
     @property
