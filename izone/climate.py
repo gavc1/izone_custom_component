@@ -13,7 +13,8 @@ from homeassistant.components.climate.const import (
     STATE_ECO, SUPPORT_FAN_MODE, SUPPORT_ON_OFF,
     SUPPORT_OPERATION_MODE, SUPPORT_TARGET_TEMPERATURE)
 from homeassistant.const import (
-    ATTR_TEMPERATURE, PRECISION_HALVES, STATE_CLOSED, STATE_OPEN, TEMP_CELSIUS)
+    ATTR_TEMPERATURE, PRECISION_HALVES, TEMP_CELSIUS,
+    STATE_OFF, STATE_OPEN, STATE_ON)
 from homeassistant.helpers.temperature import display_temp as show_temp
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
@@ -42,7 +43,7 @@ class ControllerDevice(ClimateDevice):
 
     def __init__(self, controller, async_add_entities) -> None:
         """Initialise ControllerDevice."""
-        from pizone import Controller, Zone
+        from pizone import Controller
 
         self._controller = cast(Controller, controller)
 
@@ -70,8 +71,7 @@ class ControllerDevice(ClimateDevice):
         # Create the zones
         self.zones = {}
         for zone in controller.zones:
-            if zone.type != Zone.Type.CONST:
-                self.zones[zone] = ZoneDevice(self, zone)
+            self.zones[zone] = ZoneDevice(self, zone)
 
         self._device_info = {
             'identifiers': {
@@ -288,11 +288,16 @@ class ZoneDevice(ClimateDevice):
         self._zone = cast(Zone, zone)
 
         self._supported_features = 0
-        if zone.type == Zone.Type.OPCL:
+        if zone.type != Zone.Type.AUTO:
             self._supported_features = SUPPORT_ON_OFF
-        elif zone.type == Zone.Type.AUTO:
+            # still set up the state mapping so the device displays properly
             self._state_to_pizone = {
-                STATE_CLOSED.title(): Zone.Mode.CLOSE,
+                STATE_OFF: Zone.Mode.CLOSE,
+                STATE_ON: Zone.Mode.OPEN,
+            }
+        else:
+            self._state_to_pizone = {
+                STATE_OFF: Zone.Mode.CLOSE,
                 STATE_OPEN.title(): Zone.Mode.OPEN,
                 STATE_AUTO: Zone.Mode.AUTO,
             }
@@ -420,12 +425,13 @@ class ZoneDevice(ClimateDevice):
         """
         from pizone import Zone
 
-        if self._zone.type == Zone.Type.CONST:
-            await self._controller._wrap_and_catch(  # pylint: disable=W0212
-                self._zone.set_mode(Zone.Mode.OPEN))
-        else:
+        if self._zone.type == Zone.Type.AUTO:
             await self._controller._wrap_and_catch(  # pylint: disable=W0212
                 self._zone.set_mode(Zone.Mode.AUTO))
+        else:
+            await self._controller._wrap_and_catch(  # pylint: disable=W0212
+                self._zone.set_mode(Zone.Mode.OPEN))
+            self.hass.async_add_job(self.async_update_ha_state)
 
     async def async_turn_off(self):
         """Turn device off (close zone).
@@ -435,3 +441,4 @@ class ZoneDevice(ClimateDevice):
         from pizone import Zone
         await self._controller._wrap_and_catch(  # pylint: disable=W0212
             self._zone.set_mode(Zone.Mode.CLOSE))
+        self.hass.async_add_job(self.async_update_ha_state)
