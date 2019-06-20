@@ -1,0 +1,8 @@
+{
+  "domain": "iZone",
+  "name": "iZone AC",
+  "documentation": "https://github.com/Swamp-Ig/izone_custom_component/",
+  "dependencies": [],
+  "codeowners": [],
+  "requirements": ["python-izone==1.1.0"]
+}
